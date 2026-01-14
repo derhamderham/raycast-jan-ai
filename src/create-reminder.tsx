@@ -11,7 +11,6 @@ import {
   createReminderList,
   showRemindersInApp,
 } from "./utils/reminderUtils";
-import { Preferences } from "./utils/types";
 
 interface Arguments {
   text: string;

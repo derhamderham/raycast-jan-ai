@@ -17,7 +17,6 @@ import {
   createReminderList,
   showRemindersInApp,
 } from "./utils/reminderUtils";
-import { Preferences } from "./utils/types";
 
 export default function Command() {
   const [pdfPath, setPdfPath] = useState<string>("");

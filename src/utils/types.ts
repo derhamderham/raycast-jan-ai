@@ -1,12 +1,3 @@
-export interface Preferences {
-  apiUrl: string;
-  apiKey: string;
-  defaultModel: string;
-  temperature: string;
-  maxTokens: string;
-  reminderList: string;
-}
-
 export interface MessageContentText {
   type: "text";
   text: string;
