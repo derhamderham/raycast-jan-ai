@@ -32,13 +32,15 @@ Intelligent reminder creation with special support for bills and invoices:
 - **Recurring reminders** - Daily, weekly, monthly, yearly
 - **Amount tracking** - Extracts and stores dollar amounts
 
-### 4. Convert Reminders to CSV 
+### 4. Convert Reminders to CSV ⚠️ Work in Progress
 Parse reminders and convert to CSV table for spreadsheet import:
 - **Automatic categorization** - Separates expenses from income
 - **Smart date parsing** - Handles multiple date formats
 - **Amount extraction** - Pulls dollar amounts automatically
 - **CSV export** - Ready to paste into Excel/Google Sheets
 - **Dual tables** - EXPENSES (negative) and INCOME (positive) separated
+
+**Note:** This feature is currently under development and may not work as expected.
 
 ## Prerequisites
 
