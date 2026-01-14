@@ -149,81 +149,77 @@ export default function Command() {
       title: "Extracting tasks from PDF(s)...",
     });
 
-    try {
-      let allTasks = [];
+    const allTasks = [];
 
-      // Process each PDF
-      for (const pdfPath of pdfPaths) {
-        const tasks = await extractTaskFromPDF(pdfPath);
-        allTasks.push(...tasks);
-      }
+    // Process each PDF
+    for (const pdfPath of pdfPaths) {
+      const tasks = await extractTaskFromPDF(pdfPath);
+      allTasks.push(...tasks);
+    }
 
-      if (allTasks.length === 0) {
-        await showToast({
-          style: Toast.Style.Failure,
-          title: "No tasks found",
-          message: "Could not extract any tasks from the PDF(s)",
-        });
-        return;
-      }
+    if (allTasks.length === 0) {
+      await showToast({
+        style: Toast.Style.Failure,
+        title: "No tasks found",
+        message: "Could not extract any tasks from the PDF(s)",
+      });
+      return;
+    }
+
+    await showToast({
+      style: Toast.Style.Animated,
+      title: `Creating ${allTasks.length} reminder${allTasks.length > 1 ? "s" : ""}...`,
+    });
+
+    // Verify reminder list exists, create if needed
+    const listExists = await verifyReminderList(listName);
+    if (!listExists) {
+      await createReminderList(listName);
+    }
+
+    // Create all reminders and collect IDs
+    const reminderIds: string[] = [];
+    for (const task of allTasks) {
+      const reminderId = await createReminder(task, listName);
+      reminderIds.push(reminderId);
+    }
+
+    // Show reminders in Reminders app
+    await showRemindersInApp(reminderIds, listName);
+
+    // Show success message
+    if (allTasks.length === 1) {
+      const task = allTasks[0];
+      const successMessage = [
+        `"${task.title}"`,
+        task.dueDate ? `due ${task.dueDate}` : null,
+        task.amount ? `($${task.amount.toFixed(2)})` : null,
+      ]
+        .filter(Boolean)
+        .join(" ");
 
       await showToast({
-        style: Toast.Style.Animated,
-        title: `Creating ${allTasks.length} reminder${allTasks.length > 1 ? "s" : ""}...`,
+        style: Toast.Style.Success,
+        title: "Reminder created",
+        message: successMessage,
       });
+    } else {
+      // Multiple tasks
+      const summary = allTasks
+        .map((t) => {
+          const parts = [t.title];
+          if (t.amount) parts.push(`$${t.amount.toFixed(2)}`);
+          if (t.dueDate) parts.push(t.dueDate);
+          return parts.join(" - ");
+        })
+        .join("\n");
 
-      // Verify reminder list exists, create if needed
-      const listExists = await verifyReminderList(listName);
-      if (!listExists) {
-        await createReminderList(listName);
-      }
-
-      // Create all reminders and collect IDs
-      const reminderIds: string[] = [];
-      for (const task of allTasks) {
-        const reminderId = await createReminder(task, listName);
-        reminderIds.push(reminderId);
-      }
-
-      // Show reminders in Reminders app
-      await showRemindersInApp(reminderIds, listName);
-
-      // Show success message
-      if (allTasks.length === 1) {
-        const task = allTasks[0];
-        const successMessage = [
-          `"${task.title}"`,
-          task.dueDate ? `due ${task.dueDate}` : null,
-          task.amount ? `($${task.amount.toFixed(2)})` : null,
-        ]
-          .filter(Boolean)
-          .join(" ");
-
-        await showToast({
-          style: Toast.Style.Success,
-          title: "Reminder created",
-          message: successMessage,
-        });
-      } else {
-        // Multiple tasks
-        const summary = allTasks
-          .map((t) => {
-            const parts = [t.title];
-            if (t.amount) parts.push(`$${t.amount.toFixed(2)}`);
-            if (t.dueDate) parts.push(t.dueDate);
-            return parts.join(" - ");
-          })
-          .join("\n");
-
-        await showToast({
-          style: Toast.Style.Success,
-          title: `${allTasks.length} reminders created`,
-          message:
-            summary.length > 100 ? `${summary.substring(0, 100)}...` : summary,
-        });
-      }
-    } catch (error) {
-      throw error;
+      await showToast({
+        style: Toast.Style.Success,
+        title: `${allTasks.length} reminders created`,
+        message:
+          summary.length > 100 ? `${summary.substring(0, 100)}...` : summary,
+      });
     }
   }
 
@@ -233,55 +229,51 @@ export default function Command() {
       title: "Summarizing PDF(s)...",
     });
 
-    try {
-      let allResults: string[] = [];
+    const allResults: string[] = [];
 
-      for (const pdfPath of pdfPaths) {
-        const fileName = pdfPath.split("/").pop() || "PDF";
-        const userPrompt =
-          "Summarize this document concisely. Include the main points, key information, and any important details.";
+    for (const pdfPath of pdfPaths) {
+      const fileName = pdfPath.split("/").pop() || "PDF";
+      const userPrompt =
+        "Summarize this document concisely. Include the main points, key information, and any important details.";
 
-        const result = await sendToJanAiWithPDF(pdfPath, userPrompt);
+      const result = await sendToJanAiWithPDF(pdfPath, userPrompt);
 
-        if (pdfPaths.length > 1) {
-          allResults.push(`## ${fileName}\n\n${result}`);
-        } else {
-          allResults.push(result);
-        }
+      if (pdfPaths.length > 1) {
+        allResults.push(`## ${fileName}\n\n${result}`);
+      } else {
+        allResults.push(result);
       }
-
-      const finalResult = allResults.join("\n\n---\n\n");
-
-      // Copy to clipboard
-      await Clipboard.copy(finalResult);
-
-      // Show result in detail view
-      push(
-        <Detail
-          markdown={finalResult}
-          actions={
-            <ActionPanel>
-              <Action.CopyToClipboard
-                title="Copy to Clipboard"
-                content={finalResult}
-              />
-              <Action.Paste content={finalResult} />
-            </ActionPanel>
-          }
-        />,
-      );
-
-      await showToast({
-        style: Toast.Style.Success,
-        title: "Summary copied to clipboard",
-        message:
-          pdfPaths.length > 1
-            ? `Summarized ${pdfPaths.length} PDFs`
-            : "Summary complete",
-      });
-    } catch (error) {
-      throw error;
     }
+
+    const finalResult = allResults.join("\n\n---\n\n");
+
+    // Copy to clipboard
+    await Clipboard.copy(finalResult);
+
+    // Show result in detail view
+    push(
+      <Detail
+        markdown={finalResult}
+        actions={
+          <ActionPanel>
+            <Action.CopyToClipboard
+              title="Copy To Clipboard"
+              content={finalResult}
+            />
+            <Action.Paste content={finalResult} />
+          </ActionPanel>
+        }
+      />,
+    );
+
+    await showToast({
+      style: Toast.Style.Success,
+      title: "Summary copied to clipboard",
+      message:
+        pdfPaths.length > 1
+          ? `Summarized ${pdfPaths.length} PDFs`
+          : "Summary complete",
+    });
   }
 
   async function handleCustomPrompt(pdfPaths: string[], customPrompt: string) {
@@ -290,52 +282,48 @@ export default function Command() {
       title: "Processing PDF(s) with custom prompt...",
     });
 
-    try {
-      let allResults: string[] = [];
+    const allResults: string[] = [];
 
-      for (const pdfPath of pdfPaths) {
-        const fileName = pdfPath.split("/").pop() || "PDF";
-        const result = await sendToJanAiWithPDF(pdfPath, customPrompt);
+    for (const pdfPath of pdfPaths) {
+      const fileName = pdfPath.split("/").pop() || "PDF";
+      const result = await sendToJanAiWithPDF(pdfPath, customPrompt);
 
-        if (pdfPaths.length > 1) {
-          allResults.push(`## ${fileName}\n\n${result}`);
-        } else {
-          allResults.push(result);
-        }
+      if (pdfPaths.length > 1) {
+        allResults.push(`## ${fileName}\n\n${result}`);
+      } else {
+        allResults.push(result);
       }
-
-      const finalResult = allResults.join("\n\n---\n\n");
-
-      // Copy to clipboard
-      await Clipboard.copy(finalResult);
-
-      // Show result in detail view
-      push(
-        <Detail
-          markdown={finalResult}
-          actions={
-            <ActionPanel>
-              <Action.CopyToClipboard
-                title="Copy to Clipboard"
-                content={finalResult}
-              />
-              <Action.Paste content={finalResult} />
-            </ActionPanel>
-          }
-        />,
-      );
-
-      await showToast({
-        style: Toast.Style.Success,
-        title: "Result copied to clipboard",
-        message:
-          pdfPaths.length > 1
-            ? `Processed ${pdfPaths.length} PDFs`
-            : "Processing complete",
-      });
-    } catch (error) {
-      throw error;
     }
+
+    const finalResult = allResults.join("\n\n---\n\n");
+
+    // Copy to clipboard
+    await Clipboard.copy(finalResult);
+
+    // Show result in detail view
+    push(
+      <Detail
+        markdown={finalResult}
+        actions={
+          <ActionPanel>
+            <Action.CopyToClipboard
+              title="Copy To Clipboard"
+              content={finalResult}
+            />
+            <Action.Paste content={finalResult} />
+          </ActionPanel>
+        }
+      />,
+    );
+
+    await showToast({
+      style: Toast.Style.Success,
+      title: "Result copied to clipboard",
+      message:
+        pdfPaths.length > 1
+          ? `Processed ${pdfPaths.length} PDFs`
+          : "Processing complete",
+    });
   }
 
   return (

@@ -217,7 +217,7 @@ export default function Command() {
           />
           {clipboardFiles.length > 0 && (
             <Action
-              title="Paste from Clipboard"
+              title="Paste From Clipboard"
               icon={Icon.Clipboard}
               shortcut={{ modifiers: ["cmd"], key: "v" }}
               onAction={handlePasteFromClipboard}
