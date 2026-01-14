@@ -43,8 +43,20 @@
     },
     {
       "name": "reminders-to-csv",
-      "title": "Convert Reminders to Csv",
+      "title": "Convert Reminders to CSV",
       "description": "Parse reminders text and convert to CSV table with expenses and income separated",
+      "mode": "view"
+    },
+    {
+      "name": "create-reminder-from-pdf-direct",
+      "title": "Create Reminder from PDF",
+      "description": "Process PDF invoices - supports file selection and clipboard paste (⌘C file in Finder)",
+      "mode": "view"
+    },
+    {
+      "name": "process-pdf-native",
+      "title": "Process PDF with Jan.ai",
+      "description": "Send PDFs to Jan.ai for tasks, summaries, or custom queries - supports clipboard paste (⌘C file)",
       "mode": "view"
     }
   ],

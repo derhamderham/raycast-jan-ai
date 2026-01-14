@@ -32,7 +32,24 @@ Intelligent reminder creation with special support for bills and invoices:
 - **Recurring reminders** - Daily, weekly, monthly, yearly
 - **Amount tracking** - Extracts and stores dollar amounts
 
-### 4. Convert Reminders to CSV ⚠️ Work in Progress
+### 4. Create Reminder from PDF
+Process PDF invoices and bills with intelligent extraction:
+- **Direct invoice processing** - Upload or paste PDF files
+- **Clipboard support** - Copy PDF in Finder (⌘C), then paste (⌘V)
+- **Vision & OCR fallback** - Works with both text and image-based PDFs
+- **Accounts receivable/payable** - Automatic sign detection
+- **Split payment terms** - Handles "50% down, 50% NET 30" scenarios
+- **Smart date parsing** - Explicit dates, relative dates, NET terms
+
+### 5. Process PDF with Jan.ai
+Versatile PDF processing with multiple actions:
+- **Extract Tasks** - Pull invoice data and create reminders
+- **Summarize** - Generate concise PDF summaries
+- **Custom Prompt** - Ask any question about PDF content
+- **Multi-file support** - Process multiple PDFs at once
+- **Clipboard integration** - Copy files in Finder and paste
+
+### 6. Convert Reminders to CSV ⚠️ Work in Progress
 Parse reminders and convert to CSV table for spreadsheet import:
 - **Automatic categorization** - Separates expenses from income
 - **Smart date parsing** - Handles multiple date formats
@@ -137,6 +154,53 @@ Client invoice $5000 due next Friday
 Quarterly tax payment $3500 due March 15
 ```
 
+### Create Reminder from PDF
+
+Process PDF invoices directly:
+
+1. **Via Clipboard:**
+   - Copy PDF file in Finder (⌘C)
+   - Run "Create Reminder from PDF" command
+   - Press ⌘V to paste from clipboard
+   - Reminders created automatically
+
+2. **Via File Picker:**
+   - Run "Create Reminder from PDF" command
+   - Select PDF file from picker
+   - Submit to process
+
+**Supported invoice formats:**
+- Text-based PDFs (instant extraction)
+- Scanned/image PDFs (uses OCR)
+- Split payment terms ("50% down, 50% NET 30")
+- Both accounts receivable (money you receive) and payable (money you pay)
+
+### Process PDF with Jan.ai
+
+Versatile PDF processing with multiple actions:
+
+1. **Extract Tasks:**
+   - Same as "Create Reminder from PDF"
+   - Supports multiple PDFs at once
+
+2. **Summarize:**
+   - Select PDF(s) and choose "Summarize PDF" action
+   - Summary copied to clipboard and shown in viewer
+   - Useful for quick document review
+
+3. **Custom Prompt:**
+   - Select PDF(s) and choose "Custom Prompt" action
+   - Enter your question (e.g., "What are the payment terms?")
+   - Result copied to clipboard and shown in viewer
+
+**Example custom prompts:**
+```
+Extract all line items with prices
+List all vendor contact information
+What are the warranty terms?
+Translate this document to Spanish
+```
+
 ## How Reminders Work
 
 1. Text is sent to Jan.ai for structured extraction
@@ -187,22 +251,35 @@ Quarterly tax payment $3500 due March 15
 - Extension will create list if missing
 - Check Reminders app permissions
 
+### PDF processing fails
+- **"pdfplumber not installed"**: Run `pip3 install pdfplumber`
+- **"pytesseract not found"**: Run `pip3 install pytesseract`
+- **"pdftoppm not found"**: Run `brew install poppler`
+- **"tesseract not found"**: Run `brew install tesseract`
+- **"image input is not supported"**: Model doesn't support vision, will auto-fallback to OCR
+- **Sandboxed file paths**: Extension automatically copies to temp directory
+
 ## Project Structure
 
 ```
 jan-ai-assistant/
 ├── src/
-│   ├── process-text.tsx       # Text processing command
-│   ├── quick-actions.tsx      # Quick actions command
-│   ├── create-reminder.tsx    # Reminder creation command
+│   ├── process-text.tsx                    # Text processing command
+│   ├── quick-actions.tsx                   # Quick actions command
+│   ├── create-reminder.tsx                 # Text reminder creation
+│   ├── create-reminder-from-pdf-direct.tsx # PDF invoice reminders
+│   ├── process-pdf-native.tsx              # Multi-purpose PDF processing
+│   ├── reminders-to-csv.tsx                # CSV export (WIP)
 │   └── utils/
-│       ├── janApi.ts          # Jan.ai API integration
-│       ├── reminderUtils.ts   # Apple Reminders integration
-│       ├── textHelpers.ts     # Text formatting utilities
-│       └── types.ts           # TypeScript types
-├── package.json               # Dependencies & config
-├── tsconfig.json              # TypeScript config
-└── README.md                  # Documentation
+│       ├── janApi.ts                       # Jan.ai API integration
+│       ├── reminderUtils.ts                # Apple Reminders integration
+│       ├── pdfUtils.ts                     # PDF text extraction & OCR
+│       ├── imageUtils.ts                   # Image OCR support
+│       ├── textHelpers.ts                  # Text formatting utilities
+│       └── types.ts                        # TypeScript types
+├── package.json                            # Dependencies & config
+├── tsconfig.json                           # TypeScript config
+└── README.md                               # Documentation
 ```
 
 ## Development

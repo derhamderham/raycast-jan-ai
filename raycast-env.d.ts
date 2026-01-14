@@ -34,6 +34,10 @@ declare namespace Preferences {
   export type CreateReminder = ExtensionPreferences & {}
   /** Preferences accessible in the `reminders-to-csv` command */
   export type RemindersToCsv = ExtensionPreferences & {}
+  /** Preferences accessible in the `create-reminder-from-pdf-direct` command */
+  export type CreateReminderFromPdfDirect = ExtensionPreferences & {}
+  /** Preferences accessible in the `process-pdf-native` command */
+  export type ProcessPdfNative = ExtensionPreferences & {}
 }
 
 declare namespace Arguments {
@@ -51,5 +55,9 @@ declare namespace Arguments {
 }
   /** Arguments passed to the `reminders-to-csv` command */
   export type RemindersToCsv = {}
+  /** Arguments passed to the `create-reminder-from-pdf-direct` command */
+  export type CreateReminderFromPdfDirect = {}
+  /** Arguments passed to the `process-pdf-native` command */
+  export type ProcessPdfNative = {}
 }
 
