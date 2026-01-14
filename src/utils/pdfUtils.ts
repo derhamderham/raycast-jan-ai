@@ -156,7 +156,11 @@ except Exception as e:
       maxBuffer: 10 * 1024 * 1024,
       timeout: 60000, // OCR can take a while
     },
-  );
+ `;
+
+  console.log(`[extractWithOCR] Running OCR on PDF...`);
+
+  const { stdout, stderr } = await execAsync(
 
   if (stderr && stderr.includes("Error")) {
     throw new Error(`OCR failed: ${stderr}`);
