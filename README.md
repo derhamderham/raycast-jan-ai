@@ -2,6 +2,9 @@
 
 A comprehensive Raycast extension for Jan.ai that provides text processing, quick actions, and intelligent reminder creation.
 
+> **100% vibe-coded with [Claude Code](https://claude.com/claude-code)**
+> MIT Licensed • Built with AI assistance
+
 ## Features
 
 ### 1. Process with Jan.ai
@@ -29,17 +32,7 @@ Intelligent reminder creation with special support for bills and invoices:
 - **Recurring reminders** - Daily, weekly, monthly, yearly
 - **Amount tracking** - Extracts and stores dollar amounts
 
-### 4. Create Reminder from PDF Invoice 📄
-Right-click PDF invoices to automatically extract payment info:
-- **PDF text extraction** - Extracts text from invoice PDFs
-- **Multi-payment support** - Handles split payments (50% down, 50% NET 30)
-- **Automatic date parsing** - Detects explicit dates and NET terms
-- **Finder Quick Action** - Right-click any PDF → Create reminders
-- **Batch processing** - Process multiple PDFs at once
-
-See [PDF-QUICK-ACTION-SETUP.md](PDF-QUICK-ACTION-SETUP.md) for installation instructions.
-
-### 5. Convert Reminders to CSV 📊 NEW!
+### 4. Convert Reminders to CSV 
 Parse reminders and convert to CSV table for spreadsheet import:
 - **Automatic categorization** - Separates expenses from income
 - **Smart date parsing** - Handles multiple date formats
@@ -47,13 +40,36 @@ Parse reminders and convert to CSV table for spreadsheet import:
 - **CSV export** - Ready to paste into Excel/Google Sheets
 - **Dual tables** - EXPENSES (negative) and INCOME (positive) separated
 
-See [REMINDERS-TO-CSV-GUIDE.md](REMINDERS-TO-CSV-GUIDE.md) for usage examples.
-
 ## Prerequisites
+
+### Required Software
 
 1. **Jan.ai** running locally with API server enabled
 2. **Apple Reminders** app (for reminder creation)
-3. Jan.ai model downloaded (e.g., llama-3.1-8b-instruct, mistral-7b-instruct)
+3. **Python 3** with the following packages:
+   ```bash
+   pip3 install pdfplumber pytesseract Pillow
+   ```
+
+### Optional: PDF OCR Support
+
+For OCR processing of image-based PDFs (invoices, scanned documents):
+
+1. **Tesseract OCR** - Install via Homebrew:
+   ```bash
+   brew install tesseract
+   ```
+
+2. **Poppler** (for pdftoppm utility) - Install via Homebrew:
+   ```bash
+   brew install poppler
+   ```
+
+**Note:** PDF text extraction will work without OCR for text-based PDFs using pdfplumber. OCR is only needed for scanned/image-based PDFs.
+
+### Jan.ai Model
+
+Download a model in Jan.ai (e.g., llama-3.1-8b-instruct, mistral-7b-instruct)
 
 ## Installation
 
@@ -224,4 +240,26 @@ Common model IDs:
 
 ## License
 
-MIT
+MIT License
+
+Copyright (c) 2026 Mike Derham
+
+This extension was 100% vibe-coded with [Claude Code](https://claude.com/claude-code).
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
