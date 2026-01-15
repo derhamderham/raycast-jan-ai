@@ -57,14 +57,15 @@ except Exception as e:
  * Uses pdftoppm directly to avoid PATH issues
  */
 async function extractWithOCR(pdfPath: string): Promise<string> {
-  const escapedPath = pdfPath.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-
   const pythonScript = `
 import sys
 import os
 import tempfile
 import subprocess
 from pathlib import Path
+...
+  `;
+ 
 
 try:
     import pytesseract
