@@ -4,8 +4,6 @@ import fs from "fs/promises";
 import path from "path";
 import os from "os";
 
-const execAsync = promisify(exec);
-
 /**
  * Extract text from PDF using Python's pdfplumber
  */
@@ -36,7 +34,7 @@ except Exception as e:
     sys.exit(1)
 `;
 
-  const { stdout, stderr } = await execAsync(
+  const { stdout, stderr } = await promisify(exec)(
     `python3 -c '${pythonScript.replace(/'/g, "'\\''")}'`,
     {
       maxBuffer: 10 * 1024 * 1024,
@@ -150,7 +148,7 @@ except Exception as e:
 
   console.log(`[extractWithOCR] Running OCR on PDF...`);
 
-  const { stdout, stderr } = await execAsync(
+  const { stdout, stderr } = await promisify(exec)(
     `python3 -c '${pythonScript.replace(/'/g, "'\\''")}'`,
     {
       maxBuffer: 10 * 1024 * 1024,
